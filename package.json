@@ -1,0 +1,14 @@
+{
+  "name": "cantibot",
+  "version": "2017.11.20a",
+  "dependencies": {
+    "discord.js": "^11.2.1",
+    "mysql": "^2.15.0",
+    "mysql.js": "^1.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/h66n/cantibot.git"
+  },
+  "license": "MIT"
+}
