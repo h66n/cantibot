@@ -18,6 +18,7 @@ bot.on('ready', () => {
     console.log('Canti is ready to crush some pussy.');
     setInterval(runScheduledActions, 60000);
     setInterval(logModStats, 900000);
+    setInterval(logServerStats, 900000);
 });
 
 function runScheduledActions()
@@ -91,6 +92,38 @@ function logModStats()
 
     db.query("INSERT INTO mod_stats (time, online, idle, dnd, offline) VALUES (now(), ?, ?, ?, ?)",
         [online, idle, dnd, offline]);
+}
+
+function logServerStats () 
+{
+    let guild = bot.guilds.get(config.mainServer);
+    let users = guild.roles.find('name','@everyone');
+    let online = 0;
+    let idle = 0;
+    let dnd = 0;
+    let offline = 0;
+    users.members.forEach(function (member, id, map) {
+        switch (member.presence.status) {
+            case "online":
+                online++;
+                break;
+            case "idle":
+                idle++;
+                break;
+            case "dnd":
+                dnd++;
+                break;
+            case "offline":
+                offline++;
+                break;
+        }
+    });
+    let total = online + idle + dnd + offline;
+
+    db.query("INSERT INTO server_stats (server, server_name, users_online, users_idle, users_dnd, users_offline, users_total) VALUES (?,?,?,?,?,?,?)" + 
+	"ON DUPLICATE KEY UPDATE users_online=?, users_idle=?, users_dnd=?, users_offline=?, users_total=?",
+	[guild.id, guild.name, online, idle, dnd, offline, total, online, idle, dnd, offline, total]);
+
 }
 
 bot.on('message', message => {
